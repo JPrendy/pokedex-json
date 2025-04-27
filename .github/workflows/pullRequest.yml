@@ -1,0 +1,41 @@
+name: CI pull request
+
+on:
+  push: 
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    # runs on the latest macOS virtual environment
+    runs-on: macos-latest
+    timeout-minutes: 20
+    #  runs-on: ubuntu-latest # need to use linux if we want to use the linter
+
+    steps:
+    - uses: actions/checkout@v3.0.2
+
+    # Run Linter against code base, see https://github.com/github/super-linter for how the linter works
+    - name: Lint Code Base
+      if: ${{ runner.os == 'Linux'}}
+      uses: docker://github/super-linter:v2.0.0
+      env:
+        VALIDATE_ALL_CODEBASE: false
+        VALIDATE_MD: true
+
+    - name: Run tests
+      if: ${{ github.base_ref == 'main' }}
+      run: echo Github Actions template
+
+    # Artifacts allow you to persist data like test results after a job has completed, see https://docs.github.com/en/actions/configuring-and-managing-workflows/persisting-workflow-data-using-artifacts for how the artifacts works
+    # - name: Upload Fastlane Test results
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: Fastlane Test Results
+    #     path: fastlane/test_output    
+
